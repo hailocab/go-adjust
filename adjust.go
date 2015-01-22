@@ -113,7 +113,7 @@ func (c *Client) TrackEventWithParams(deviceIDType DeviceIDType, deviceID string
 
 // TrackRevenueWithParams tracks a revenue event with custom parameters. These
 // parameters can be used in callbacks.
-func (c *Client) TrackRevenueWithParams(deviceIDType DeviceIDType, deviceID string, eventToken string, amount int, t time.Time, params map[string]string) (resp *Response, err error) {
+func (c *Client) TrackRevenueWithParams(deviceIDType DeviceIDType, deviceID string, eventToken string, amount int64, t time.Time, params map[string]string) (resp *Response, err error) {
 	return c.send("/event", url.Values{
 		"event_token":        {eventToken},
 		"amount":             {strconv.FormatInt(int64(amount), 10)},
