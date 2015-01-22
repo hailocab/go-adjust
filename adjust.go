@@ -1,7 +1,8 @@
-package adjust
+package goadjust
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"github.com/Sirupsen/logrus"
@@ -87,7 +88,7 @@ func (c *Client) TrackEvent(deviceIDType DeviceIDType, deviceID string, eventTok
 		"event_token":        {eventToken},
 		"created_at":         {t.Format(timeLayout)},
 		string(deviceIDType): {deviceID},
-	})
+	}, map[string]string{})
 }
 
 // TrackRevenue tracks a revenue event
@@ -97,16 +98,40 @@ func (c *Client) TrackRevenue(deviceIDType DeviceIDType, deviceID string, eventT
 		"amount":             {strconv.FormatInt(int64(amount), 10)},
 		"created_at":         {t.Format(timeLayout)},
 		string(deviceIDType): {deviceID},
-	})
+	}, map[string]string{})
 }
 
-func (c *Client) send(path string, req url.Values) (resp *Response, err error) {
+// TrackEventWithParams tracks a non-revenue event with custom parameters. These
+// parameters can be used in callbacks.
+func (c *Client) TrackEventWithParams(deviceIDType DeviceIDType, deviceID string, eventToken string, t time.Time, params map[string]string) (resp *Response, err error) {
+	return c.send("/event", url.Values{
+		"event_token":        {eventToken},
+		"created_at":         {t.Format(timeLayout)},
+		string(deviceIDType): {deviceID},
+	}, params)
+}
+
+// TrackRevenueWithParams tracks a revenue event with custom parameters. These
+// parameters can be used in callbacks.
+func (c *Client) TrackRevenueWithParams(deviceIDType DeviceIDType, deviceID string, eventToken string, amount int, t time.Time, params map[string]string) (resp *Response, err error) {
+	return c.send("/event", url.Values{
+		"event_token":        {eventToken},
+		"amount":             {strconv.FormatInt(int64(amount), 10)},
+		"created_at":         {t.Format(timeLayout)},
+		string(deviceIDType): {deviceID},
+	}, params)
+}
+
+func (c *Client) send(path string, req url.Values, params map[string]string) (resp *Response, err error) {
 	// Add client fields to request
 	req.Add("s2s", "1")
 	req.Add("app_token", c.AppToken)
+	req.Add("params", base64EncodeMap(params))
 	if c.Environment != "" {
 		req.Add("environment", string(c.Environment))
 	}
+
+	// Encode base64+json
 
 	logrus.WithField("req", req).Debugf("Sending request to %s", path)
 
@@ -145,4 +170,10 @@ func (c *Client) send(path string, req url.Values) (resp *Response, err error) {
 	}
 
 	return resp, nil
+}
+
+func base64EncodeMap(m map[string]string) string {
+	b, _ := json.Marshal(m)
+
+	return base64.StdEncoding.EncodeToString(b)
 }

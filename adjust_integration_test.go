@@ -1,6 +1,6 @@
 // +build integration
 
-package adjust
+package goadjust
 
 import (
 	"os"
@@ -25,9 +25,19 @@ func TestIntegrationTrackEvent(t *testing.T) {
 }
 
 func TestIntegrationTrackRevenue(t *testing.T) {
+	adjust := New(AppToken, Sandbox)
+
+	_, err := adjust.TrackRevenue(IDFA, DeviceID, EventToken, 1000, time.Now())
+	require.Nil(t, err)
 
 }
 
 func TestIntegrationCustomAttributes(t *testing.T) {
+	adjust := New(AppToken, Sandbox)
+
+	_, err := adjust.TrackEventWithParams(IDFA, DeviceID, EventToken, time.Now(), map[string]string{
+		"testdata": "1234",
+	})
+	require.Nil(t, err)
 
 }
