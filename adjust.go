@@ -92,16 +92,6 @@ func (c *Client) TrackEvent(deviceIDType DeviceIDType, deviceID string, eventTok
 	}, map[string]string{})
 }
 
-// TrackRevenue tracks a revenue event
-func (c *Client) TrackRevenue(deviceIDType DeviceIDType, deviceID string, eventToken string, amount int, t time.Time) (resp *Response, err error) {
-	return c.send("/revenue", url.Values{
-		"event_token":        {eventToken},
-		"amount":             {strconv.FormatInt(int64(amount), 10)},
-		"created_at":         {t.Format(timeLayout)},
-		string(deviceIDType): {deviceID},
-	}, map[string]string{})
-}
-
 // TrackEventWithParams tracks a non-revenue event with custom parameters. These
 // parameters can be used in callbacks.
 func (c *Client) TrackEventWithParams(deviceIDType DeviceIDType, deviceID string, eventToken string, t time.Time, params map[string]string) (resp *Response, err error) {
@@ -112,10 +102,20 @@ func (c *Client) TrackEventWithParams(deviceIDType DeviceIDType, deviceID string
 	}, params)
 }
 
+// TrackRevenue tracks a revenue event
+func (c *Client) TrackRevenue(deviceIDType DeviceIDType, deviceID string, eventToken string, amount int, t time.Time) (resp *Response, err error) {
+	return c.send("/revenue", url.Values{
+		"event_token":        {eventToken},
+		"amount":             {strconv.FormatInt(int64(amount), 10)},
+		"created_at":         {t.Format(timeLayout)},
+		string(deviceIDType): {deviceID},
+	}, map[string]string{})
+}
+
 // TrackRevenueWithParams tracks a revenue event with custom parameters. These
 // parameters can be used in callbacks.
 func (c *Client) TrackRevenueWithParams(deviceIDType DeviceIDType, deviceID string, eventToken string, amount int64, t time.Time, params map[string]string) (resp *Response, err error) {
-	return c.send("/event", url.Values{
+	return c.send("/revenue", url.Values{
 		"event_token":        {eventToken},
 		"amount":             {strconv.FormatInt(int64(amount), 10)},
 		"created_at":         {t.Format(timeLayout)},
