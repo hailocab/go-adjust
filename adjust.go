@@ -94,7 +94,7 @@ func (c *Client) TrackEvent(deviceIDType DeviceIDType, deviceID string, eventTok
 
 // TrackRevenue tracks a revenue event
 func (c *Client) TrackRevenue(deviceIDType DeviceIDType, deviceID string, eventToken string, amount int, t time.Time) (resp *Response, err error) {
-	return c.send("/event", url.Values{
+	return c.send("/revenue", url.Values{
 		"event_token":        {eventToken},
 		"amount":             {strconv.FormatInt(int64(amount), 10)},
 		"created_at":         {t.Format(timeLayout)},
