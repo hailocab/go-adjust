@@ -132,16 +132,13 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 		req.Add("environment", string(c.Environment))
 	}
 
-	// Encode base64+json
-
-	log.Debugf("[Adjust] Sending request to %s", path)
-
 	// Send request
 	var httpClient = c.HTTPClient
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
 
+	log.Debugf("[Adjust] Sending request to %s: %v", path, req)
 	httpResp, err := httpClient.PostForm(APIURL+path, req)
 	if err != nil {
 		log.Errorf("[Adjust] Received error when sending request: %s", err)
@@ -151,6 +148,7 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 	buf := &bytes.Buffer{}
 	_, err = io.Copy(buf, httpResp.Body)
 	httpResp.Body.Close()
+	log.Debugf("[Adjust] Recieved HTTP response: %s", buf.String())
 
 	switch {
 	case strings.HasPrefix(buf.String(), "Event failed (Device not found, contact support@adjust.com)"):
@@ -161,8 +159,6 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 		log.Errorf("[Adjust] Received error when sending request: %s", msg)
 		return nil, errors.New(msg)
 	}
-
-	log.Debugf("[Adjust] Recieved HTTP response: %s", buf.String())
 
 	// Unmarshal response
 	if err := json.NewDecoder(buf).Decode(&resp); err != nil {
