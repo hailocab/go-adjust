@@ -134,7 +134,7 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 
 	// Encode base64+json
 
-	log.Debugf("Sending request to %s", path)
+	log.Debugf("[Adjust] Sending request to %s", path)
 
 	// Send request
 	var httpClient = c.HTTPClient
@@ -144,7 +144,7 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 
 	httpResp, err := httpClient.PostForm(APIURL+path, req)
 	if err != nil {
-		log.Errorf("Received error when sending request: %s", err)
+		log.Errorf("[Adjust] Received error when sending request: %s", err)
 		return nil, err
 	}
 
@@ -154,19 +154,19 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 
 	switch {
 	case strings.HasPrefix(buf.String(), "Event failed (Device not found, contact support@adjust.com)"):
-		log.Errorf("Received error from Adjust: Device not found")
+		log.Errorf("[Adjust] Received error from Adjust: Device not found")
 		return nil, ErrDeviceNotFound
 	case strings.HasPrefix(buf.String(), "Event failed"):
 		msg := strings.TrimSpace(buf.String())
-		log.Errorf("Received error when sending request: %s", msg)
+		log.Errorf("[Adjust] Received error when sending request: %s", msg)
 		return nil, errors.New(msg)
 	}
 
-	log.Debugf("Recieved HTTP response: %s", buf.String())
+	log.Debugf("[Adjust] Recieved HTTP response: %s", buf.String())
 
 	// Unmarshal response
 	if err := json.NewDecoder(buf).Decode(&resp); err != nil {
-		log.Errorf("Received error when decoding response: %s", err)
+		log.Errorf("[Adjust] Received error when decoding response: %s", err)
 		return nil, err
 	}
 
