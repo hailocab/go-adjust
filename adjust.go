@@ -5,13 +5,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"github.com/Sirupsen/logrus"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	log "github.com/cihub/seelog"
 )
 
 const (
@@ -133,7 +134,7 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 
 	// Encode base64+json
 
-	logrus.WithField("req", req).Debugf("Sending request to %s", path)
+	log.Debugf("Sending request to %s", path)
 
 	// Send request
 	var httpClient = c.HTTPClient
@@ -143,7 +144,7 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 
 	httpResp, err := httpClient.PostForm(APIURL+path, req)
 	if err != nil {
-		logrus.Errorf("Received error when sending request: %s", err)
+		log.Errorf("Received error when sending request: %s", err)
 		return nil, err
 	}
 
@@ -153,19 +154,19 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 
 	switch {
 	case strings.HasPrefix(buf.String(), "Event failed (Device not found, contact support@adjust.com)"):
-		logrus.Errorf("Received error from Adjust: Device not found")
+		log.Errorf("Received error from Adjust: Device not found")
 		return nil, ErrDeviceNotFound
 	case strings.HasPrefix(buf.String(), "Event failed"):
 		msg := strings.TrimSpace(buf.String())
-		logrus.Errorf("Received error when sending request: %s", msg)
+		log.Errorf("Received error when sending request: %s", msg)
 		return nil, errors.New(msg)
 	}
 
-	logrus.WithField("status", httpResp.StatusCode).Debugf("Recieved HTTP response: %s", buf.String())
+	log.Debugf("Recieved HTTP response: %s", buf.String())
 
 	// Unmarshal response
 	if err := json.NewDecoder(buf).Decode(&resp); err != nil {
-		logrus.WithField("body", buf.String()).Errorf("Received error when decoding response: %s", err)
+		log.Errorf("Received error when decoding response: %s", err)
 		return nil, err
 	}
 
