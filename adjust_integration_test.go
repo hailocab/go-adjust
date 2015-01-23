@@ -32,6 +32,14 @@ func TestIntegrationTrackRevenue(t *testing.T) {
 
 }
 
+func TestIntegrationTrackGeneralRevenue(t *testing.T) {
+	adjust := New(AppToken, Sandbox)
+
+	_, err := adjust.TrackRevenue(IDFA, DeviceID, "", 1000, time.Now())
+	require.Nil(t, err)
+
+}
+
 func TestIntegrationCustomAttributes(t *testing.T) {
 	adjust := New(AppToken, Sandbox)
 

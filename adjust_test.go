@@ -172,7 +172,7 @@ func TestHTTPClientError(t *testing.T) {
 
 	_, err := adjust.TrackRevenue(IDFA, "1234", "5678", -1, time.Unix(12345678, 0))
 	require.NotNil(t, err)
-	assert.Equal(t, err.Error(), "Post https://s2s.adjust.com/event: client error")
+	assert.Contains(t, err.Error(), "client error")
 }
 
 func mockHTTPClient(t *testing.T, client *Client, expectedReq url.Values, code int, response string, f func()) {
