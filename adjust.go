@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	log "github.com/cihub/seelog"
 )
 
 const (
@@ -138,31 +136,25 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 		httpClient = http.DefaultClient
 	}
 
-	log.Debugf("[Adjust] Sending request to %s: %v", path, req)
 	httpResp, err := httpClient.PostForm(APIURL+path, req)
 	if err != nil {
-		log.Errorf("[Adjust] Received error when sending request: %s", err)
 		return nil, err
 	}
 
 	buf := &bytes.Buffer{}
 	_, err = io.Copy(buf, httpResp.Body)
 	httpResp.Body.Close()
-	log.Debugf("[Adjust] Recieved HTTP response: %s", buf.String())
 
 	switch {
 	case strings.HasPrefix(buf.String(), "Event failed (Device not found, contact support@adjust.com)"):
-		log.Errorf("[Adjust] Received error from Adjust: Device not found")
 		return nil, ErrDeviceNotFound
 	case strings.HasPrefix(buf.String(), "Event failed"):
 		msg := strings.TrimSpace(buf.String())
-		log.Errorf("[Adjust] Received error when sending request: %s", msg)
 		return nil, errors.New(msg)
 	}
 
 	// Unmarshal response
 	if err := json.NewDecoder(buf).Decode(&resp); err != nil {
-		log.Errorf("[Adjust] Received error when decoding response: %s", err)
 		return nil, err
 	}
 
