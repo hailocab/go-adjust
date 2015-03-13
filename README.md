@@ -1,6 +1,10 @@
 Go Adjust API Client
 ====================
 
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg "GoDoc")](http://godoc.org/github.com/hailocab/go-adjust) 
+[![Build Status](https://img.shields.io/travis/hailocab/g-adjust/master.svg "Build Status")](https://travis-ci.org/hailocab/go-adjust) 
+[![Civerage](http://gocover.io/_badge/github.com/hailocab/go-adjust "Coverage")](http://gocover.io/github.com/hailocab/go-adjust)
+
 This is a Go library for Adjust that currently supports server side event tracking.
 
 For more information see https://docs.adjust.com/en/event-tracking/
