@@ -125,7 +125,11 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 	// Add client fields to request
 	req.Add("s2s", "1")
 	req.Add("app_token", c.AppToken)
-	req.Add("params", base64EncodeMap(params))
+	b64params, err := base64EncodeMap(params)
+	if err != nil {
+		return nil, err
+	}
+	req.Add("params", b64params)
 	if c.Environment != "" {
 		req.Add("environment", string(c.Environment))
 	}
@@ -161,8 +165,10 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 	return resp, nil
 }
 
-func base64EncodeMap(m map[string]string) string {
-	b, _ := json.Marshal(m)
-
-	return base64.StdEncoding.EncodeToString(b)
+func base64EncodeMap(m map[string]string) (string, error) {
+	b, err := json.Marshal(m)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(b), nil
 }
