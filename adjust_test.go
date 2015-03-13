@@ -24,12 +24,12 @@ func TestTrackEvent(t *testing.T) {
 		"app_token":   {"token"},
 		"event_token": {"5678"},
 		"idfa":        {"1234"},
-		"created_at":  {"1970-05-23T22:21:18Z+0100"},
+		"created_at":  {"1970-05-23T21:21:18Z+0000"},
 		"environment": {"sandbox"},
 		"params":      {"e30="},
 		"s2s":         {"1"},
 	}, 200, `{"status":"OK"}`, func() {
-		resp, err := adjust.TrackEvent(IDFA, "1234", "5678", time.Unix(12345678, 0))
+		resp, err := adjust.TrackEvent(IDFA, "1234", "5678", time.Unix(12345678, 0).In(time.UTC))
 		require.Nil(t, err)
 		assert.Equal(t, "OK", resp.Status)
 	})
@@ -41,12 +41,12 @@ func TestTrackEventWithParams(t *testing.T) {
 		"app_token":   {"token"},
 		"event_token": {"5678"},
 		"idfa":        {"1234"},
-		"created_at":  {"1970-05-23T22:21:18Z+0100"},
+		"created_at":  {"1970-05-23T21:21:18Z+0000"},
 		"environment": {"sandbox"},
 		"params":      {"eyJ0ZXN0ZGF0YSI6IjQzMjEifQ=="},
 		"s2s":         {"1"},
 	}, 200, `{"status":"OK"}`, func() {
-		resp, err := adjust.TrackEventWithParams(IDFA, "1234", "5678", time.Unix(12345678, 0), map[string]string{
+		resp, err := adjust.TrackEventWithParams(IDFA, "1234", "5678", time.Unix(12345678, 0).In(time.UTC), map[string]string{
 			"testdata": "4321",
 		})
 		require.Nil(t, err)
@@ -60,12 +60,12 @@ func TestTrackEventInvalidToken(t *testing.T) {
 		"app_token":   {"invalidtoken"},
 		"event_token": {"5678"},
 		"idfa":        {"1234"},
-		"created_at":  {"1970-05-23T22:21:18Z+0100"},
+		"created_at":  {"1970-05-23T21:21:18Z+0000"},
 		"environment": {"sandbox"},
 		"params":      {"e30="},
 		"s2s":         {"1"},
 	}, 500, `Event failed (Event Token for wrong app: '5qvlia') (app_token: za9taw6qel8j, idfa: 1234)`, func() {
-		_, err := adjust.TrackEvent(IDFA, "1234", "5678", time.Unix(12345678, 0))
+		_, err := adjust.TrackEvent(IDFA, "1234", "5678", time.Unix(12345678, 0).In(time.UTC))
 		require.NotNil(t, err)
 	})
 }
@@ -76,12 +76,12 @@ func TestTrackEventUnknownDevice(t *testing.T) {
 		"app_token":   {"token"},
 		"event_token": {"5678"},
 		"idfa":        {"unknowndevice"},
-		"created_at":  {"1970-05-23T22:21:18Z+0100"},
+		"created_at":  {"1970-05-23T21:21:18Z+0000"},
 		"environment": {"sandbox"},
 		"params":      {"e30="},
 		"s2s":         {"1"},
 	}, 500, `Event failed (Device not found, contact support@adjust.com) (app_token: token, idfa: 1234)`, func() {
-		_, err := adjust.TrackEvent(IDFA, "unknowndevice", "5678", time.Unix(12345678, 0))
+		_, err := adjust.TrackEvent(IDFA, "unknowndevice", "5678", time.Unix(12345678, 0).In(time.UTC))
 		require.NotNil(t, err)
 		assert.Equal(t, ErrDeviceNotFound, err)
 	})
@@ -94,12 +94,12 @@ func TestTrackRevenue(t *testing.T) {
 		"event_token": {"5678"},
 		"idfa":        {"1234"},
 		"amount":      {"200"},
-		"created_at":  {"1970-05-23T22:21:18Z+0100"},
+		"created_at":  {"1970-05-23T21:21:18Z+0000"},
 		"environment": {"sandbox"},
 		"params":      {"e30="},
 		"s2s":         {"1"},
 	}, 200, `{"status":"OK"}`, func() {
-		resp, err := adjust.TrackRevenue(IDFA, "1234", "5678", 200, time.Unix(12345678, 0))
+		resp, err := adjust.TrackRevenue(IDFA, "1234", "5678", 200, time.Unix(12345678, 0).In(time.UTC))
 		require.Nil(t, err)
 		assert.Equal(t, "OK", resp.Status)
 	})
@@ -112,12 +112,12 @@ func TestTrackRevenueWithParams(t *testing.T) {
 		"event_token": {"5678"},
 		"idfa":        {"1234"},
 		"amount":      {"200"},
-		"created_at":  {"1970-05-23T22:21:18Z+0100"},
+		"created_at":  {"1970-05-23T21:21:18Z+0000"},
 		"environment": {"sandbox"},
 		"params":      {"eyJ0ZXN0ZGF0YSI6IjQzMjEifQ=="},
 		"s2s":         {"1"},
 	}, 200, `{"status":"OK"}`, func() {
-		resp, err := adjust.TrackRevenueWithParams(IDFA, "1234", "5678", 200, time.Unix(12345678, 0), map[string]string{
+		resp, err := adjust.TrackRevenueWithParams(IDFA, "1234", "5678", 200, time.Unix(12345678, 0).In(time.UTC), map[string]string{
 			"testdata": "4321",
 		})
 		require.Nil(t, err)
@@ -132,12 +132,12 @@ func TestTrackRevenueInvalidAmount(t *testing.T) {
 		"event_token": {"5678"},
 		"idfa":        {"1234"},
 		"amount":      {"-1"},
-		"created_at":  {"1970-05-23T22:21:18Z+0100"},
+		"created_at":  {"1970-05-23T21:21:18Z+0000"},
 		"environment": {"sandbox"},
 		"params":      {"e30="},
 		"s2s":         {"1"},
 	}, 500, `Event failed (Negative revenue: -1) (app_token: za9taw6qel8d, idfa: 1234)`, func() {
-		_, err := adjust.TrackRevenue(IDFA, "1234", "5678", -1, time.Unix(12345678, 0))
+		_, err := adjust.TrackRevenue(IDFA, "1234", "5678", -1, time.Unix(12345678, 0).In(time.UTC))
 		require.NotNil(t, err)
 	})
 }
@@ -149,12 +149,12 @@ func TestInvalidJSONResponse(t *testing.T) {
 		"event_token": {"5678"},
 		"idfa":        {"1234"},
 		"amount":      {"1000"},
-		"created_at":  {"1970-05-23T22:21:18Z+0100"},
+		"created_at":  {"1970-05-23T21:21:18Z+0000"},
 		"environment": {"sandbox"},
 		"params":      {"e30="},
 		"s2s":         {"1"},
 	}, 500, `?!?!?!`, func() {
-		_, err := adjust.TrackRevenue(IDFA, "1234", "5678", 1000, time.Unix(12345678, 0))
+		_, err := adjust.TrackRevenue(IDFA, "1234", "5678", 1000, time.Unix(12345678, 0).In(time.UTC))
 		require.NotNil(t, err)
 		assert.Contains(t, err.Error(), "invalid character")
 	})
@@ -170,7 +170,7 @@ func TestHTTPClientError(t *testing.T) {
 		},
 	}
 
-	_, err := adjust.TrackRevenue(IDFA, "1234", "5678", -1, time.Unix(12345678, 0))
+	_, err := adjust.TrackRevenue(IDFA, "1234", "5678", -1, time.Unix(12345678, 0).In(time.UTC))
 	require.NotNil(t, err)
 	assert.Contains(t, err.Error(), "client error")
 }

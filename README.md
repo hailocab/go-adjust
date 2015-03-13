@@ -46,3 +46,5 @@ To run the integration tests you must pass the tokens and a valid device ID (IDF
 ```
 ADJUST_APP_TOKEN=... ADJUST_EVENT_TOKEN=... ADJUST_DEVICE_ID=... go test -tags=integration
 ```
+
+*Note* Please note that the tests currently do not work in Go 1.3 as the mocked `net/http.Transport` is being ignored (possibly due to a bug in the stdlib?), this should hopefully be fixed soon.
