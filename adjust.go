@@ -150,7 +150,7 @@ func (c *Client) send(path string, req url.Values, params map[string]string) (re
 	httpResp.Body.Close()
 
 	switch {
-	case strings.HasPrefix(buf.String(), "Event failed (Device not found, contact support@adjust.com)"):
+	case strings.Contains(buf.String(), "Device not found"):
 		return nil, ErrDeviceNotFound
 	case strings.HasPrefix(buf.String(), "Event failed"):
 		msg := strings.TrimSpace(buf.String())
